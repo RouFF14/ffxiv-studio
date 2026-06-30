@@ -559,30 +559,6 @@
       display: none;
     }
 
-    .cover-logo {
-      position: absolute;
-      z-index: 4;
-      left: var(--logo-x, 50%);
-      top: var(--logo-y, 16%);
-      width: var(--logo-size, 34%);
-      height: auto;
-      transform: translate(-50%, -50%);
-      opacity: var(--logo-opacity, 0.9);
-      mix-blend-mode: screen;
-      pointer-events: none;
-      display: none;
-      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.4));
-    }
-
-    .cover.has-logo .cover-logo {
-      display: block;
-    }
-
-    .cover.has-logo.logo-dark .cover-logo {
-      filter: invert(1) drop-shadow(0 6px 18px rgba(0,0,0,0.4));
-      mix-blend-mode: screen;
-    }
-
     .placeholder-art {
       position: absolute;
       inset: 0;
@@ -1836,57 +1812,6 @@
       </section>
 
       <section class="section">
-        <div class="section-title">ロゴ</div>
-        <div class="field">
-          <label for="logoSelect">ロゴ種類</label>
-          <select id="logoSelect">
-            <option value="">なし</option>
-            <option value="assets/logos/bellissimo-logo-01.webp">01 レッド / SQUARE ENIX</option>
-            <option value="assets/logos/bellissimo-logo-02.webp">02 オレンジ / SQUARE ENIX</option>
-            <option value="assets/logos/bellissimo-logo-03.webp">03 グレー / SQUARE ENIX</option>
-            <option value="assets/logos/bellissimo-logo-04.webp">04 ブラック</option>
-            <option value="assets/logos/bellissimo-logo-05.webp">05 ホワイト / SQUARE ENIX</option>
-            <option value="assets/logos/bellissimo-logo-06.webp">06 グレー / FINAL FANTASY XIV</option>
-            <option value="assets/logos/bellissimo-logo-07.webp">07 ホワイト / FINAL FANTASY XIV</option>
-            <option value="assets/logos/bellissimo-logo-08.webp">08 ダークグレー / FINAL FANTASY XIV</option>
-            <option value="assets/logos/bellissimo-logo-09.webp">09 ブラック</option>
-            <option value="assets/logos/bellissimo-logo-10.webp">10 ブラック</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="logoPresetSelect">配置プリセット</label>
-          <select id="logoPresetSelect">
-            <option value="">自由調整</option>
-            <option value="top">上中央</option>
-            <option value="bottom">下中央</option>
-            <option value="rightBottom">右下スタンプ</option>
-            <option value="leftBottom">左下スタンプ</option>
-            <option value="watermark">中央透かし</option>
-          </select>
-        </div>
-        <div class="range-row">
-          <span>大きさ</span>
-          <input id="logoSizeRange" type="range" min="12" max="90" step="1" value="34">
-          <span id="logoSizeValue">34%</span>
-        </div>
-        <div class="range-row">
-          <span>横位置</span>
-          <input id="logoXRange" type="range" min="-10" max="110" step="1" value="50">
-          <span id="logoXValue">50%</span>
-        </div>
-        <div class="range-row">
-          <span>縦位置</span>
-          <input id="logoYRange" type="range" min="-10" max="110" step="1" value="16">
-          <span id="logoYValue">16%</span>
-        </div>
-        <div class="range-row">
-          <span>透明度</span>
-          <input id="logoOpacityRange" type="range" min="0.1" max="1" step="0.05" value="0.9">
-          <span id="logoOpacityValue">90%</span>
-        </div>
-      </section>
-
-      <section class="section">
         <div class="section-title">フォント</div>
         <div class="field">
           <label for="titleFontSelect">表紙タイトル</label>
@@ -1939,7 +1864,6 @@
           <label class="toggle-chip"><input type="checkbox" id="showName" checked>名前</label>
           <label class="toggle-chip"><input type="checkbox" id="showMeta" checked>ワールド</label>
           <label class="toggle-chip"><input type="checkbox" id="showCopyright" checked>権利表記</label>
-          <label class="toggle-chip"><input type="checkbox" id="showLogo" checked>ロゴ</label>
         </div>
       </section>
 
@@ -2160,7 +2084,6 @@
         <article class="cover style-visque" id="cover">
           <div class="placeholder-art" id="placeholderArt"></div>
           <img id="coverImage" alt="">
-          <img class="cover-logo" id="coverLogo" alt="">
           <div class="cover-content">
             <div class="masthead">
               <div class="kicker" id="issueOutput">JUN 2026 / VOL. XIV</div>
@@ -2197,7 +2120,6 @@
     const root = document.documentElement;
     const cover = $("cover");
     const coverImage = $("coverImage");
-    const coverLogo = $("coverLogo");
     const placeholderArt = $("placeholderArt");
     const status = $("status");
 
@@ -2314,7 +2236,6 @@
     let uploadedImages = [];
     let currentImageIndex = -1;
     let imageState = { x: 0, y: 0, scale: 1, rotate: 0 };
-    const logoState = { x: 50, y: 16, size: 34, opacity: 0.9 };
     const presetStorageKey = "bellissimo-cover-preset-v1";
     const visibilityTargets = {
       showIssue: ["#issueOutput"],
@@ -2325,15 +2246,7 @@
       showHeadline: ["#subtitleOutput"],
       showName: ["#nameOutput"],
       showMeta: [".meta"],
-      showCopyright: [".fineprint"],
-      showLogo: ["#coverLogo"]
-    };
-    const logoPresets = {
-      top: { x: 50, y: 16, size: 34, opacity: 0.9 },
-      bottom: { x: 50, y: 82, size: 32, opacity: 0.9 },
-      rightBottom: { x: 78, y: 82, size: 24, opacity: 0.86 },
-      leftBottom: { x: 22, y: 82, size: 24, opacity: 0.86 },
-      watermark: { x: 50, y: 50, size: 78, opacity: 0.25 }
+      showCopyright: [".fineprint"]
     };
     let drag = null;
 
@@ -2620,32 +2533,6 @@
       renderImageStrip();
     }
 
-    function syncLogo() {
-      const src = $("logoSelect").value;
-      if (src) {
-        coverLogo.src = src;
-        cover.classList.add("has-logo");
-        cover.classList.toggle("logo-dark", /bellissimo-logo-(04|09|10)\.webp$/.test(src));
-      } else {
-        coverLogo.removeAttribute("src");
-        cover.classList.remove("has-logo");
-        cover.classList.remove("logo-dark");
-      }
-      root.style.setProperty("--logo-x", `${logoState.x}%`);
-      root.style.setProperty("--logo-y", `${logoState.y}%`);
-      root.style.setProperty("--logo-size", `${logoState.size}%`);
-      root.style.setProperty("--logo-opacity", logoState.opacity);
-      $("logoXRange").value = logoState.x;
-      $("logoYRange").value = logoState.y;
-      $("logoSizeRange").value = logoState.size;
-      $("logoOpacityRange").value = logoState.opacity;
-      $("logoXValue").textContent = `${Math.round(logoState.x)}%`;
-      $("logoYValue").textContent = `${Math.round(logoState.y)}%`;
-      $("logoSizeValue").textContent = `${Math.round(logoState.size)}%`;
-      $("logoOpacityValue").textContent = `${Math.round(logoState.opacity * 100)}%`;
-      applyVisibility();
-    }
-
     function setupFontSelects() {
       ["nameFontSelect", "bodyFontSelect"].forEach((id) => {
         $(id).innerHTML = $("titleFontSelect").innerHTML;
@@ -2697,11 +2584,6 @@
           name: $("nameFontSelect").value,
           body: $("bodyFontSelect").value
         },
-        logo: {
-          src: $("logoSelect").value,
-          preset: $("logoPresetSelect").value,
-          ...logoState
-        },
         visibility,
         exportQuality: $("exportQualitySelect").value
       };
@@ -2733,13 +2615,6 @@
         if (data.fonts.name) $("nameFontSelect").value = data.fonts.name;
         if (data.fonts.body) $("bodyFontSelect").value = data.fonts.body;
       }
-      if (data.logo) {
-        if (data.logo.src !== undefined) $("logoSelect").value = data.logo.src;
-        if (data.logo.preset !== undefined) $("logoPresetSelect").value = data.logo.preset;
-        ["x", "y", "size", "opacity"].forEach((key) => {
-          if (data.logo[key] !== undefined) logoState[key] = Number(data.logo[key]);
-        });
-      }
       Object.entries(data.visibility || {}).forEach(([id, checked]) => { if ($(id)) $(id).checked = Boolean(checked); });
       if (data.exportQuality) $("exportQualitySelect").value = data.exportQuality;
       cover.style.setProperty("--img-fit", $("fitSelect").value);
@@ -2753,7 +2628,6 @@
       applyTextColors();
       applyTextSizes();
       applyFonts();
-      syncLogo();
       syncImage();
     }
 
@@ -2870,39 +2744,6 @@
 
     $("filterSelect").addEventListener("change", (event) => {
       cover.style.setProperty("--img-filter", event.target.value);
-    });
-
-    $("logoSelect").addEventListener("change", syncLogo);
-
-    $("logoPresetSelect").addEventListener("change", (event) => {
-      const preset = logoPresets[event.target.value];
-      if (!preset) return;
-      Object.assign(logoState, preset);
-      syncLogo();
-    });
-
-    $("logoSizeRange").addEventListener("input", (event) => {
-      logoState.size = Number(event.target.value);
-      $("logoPresetSelect").value = "";
-      syncLogo();
-    });
-
-    $("logoXRange").addEventListener("input", (event) => {
-      logoState.x = Number(event.target.value);
-      $("logoPresetSelect").value = "";
-      syncLogo();
-    });
-
-    $("logoYRange").addEventListener("input", (event) => {
-      logoState.y = Number(event.target.value);
-      $("logoPresetSelect").value = "";
-      syncLogo();
-    });
-
-    $("logoOpacityRange").addEventListener("input", (event) => {
-      logoState.opacity = Number(event.target.value);
-      $("logoPresetSelect").value = "";
-      syncLogo();
     });
 
     ["titleFontSelect", "nameFontSelect", "bodyFontSelect"].forEach((id) => {
@@ -3091,7 +2932,6 @@
     syncProfile();
     applyTextColors();
     applyTextSizes();
-    syncLogo();
     applyVisibility();
     syncImage();
     if (location.hash.startsWith("#preset=")) {
